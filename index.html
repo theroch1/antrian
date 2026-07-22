@@ -1,414 +1,153 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Operator Antrean - iPad</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
+<script>
+  // MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Z72119TldddiORT6m8dsOEkDZlRTuaII_fjYCNnFbBEkGGnpwUsRp1T0JvdztUpH/exec"; 
 
-    body {
-      background-color: #f2f2f7;
-      color: #1c1c1e;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
+  const MAX_ANTREAN = 600;
+  let currentNumber = 0;
+  let currentLoket = 0;
+  let lastNumberPerLoket = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 
-    .ipad-container {
-      background: #ffffff;
-      width: 100%;
-      max-width: 760px;
-      border-radius: 24px;
-      padding: 28px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
-    }
+  loadData();
 
-    .header {
-      text-align: center;
-      margin-bottom: 16px;
-    }
-
-    .header h1 {
-      font-size: 24px;
-      font-weight: 700;
-    }
-
-    .status-badge {
-      font-size: 13px;
-      color: #8e8e93;
-      margin-top: 4px;
-    }
-
-    /* Display Monitor Antrean */
-    .display-card {
-      background-color: #f2f2f7;
-      border-radius: 18px;
-      padding: 16px;
-      text-align: center;
-      margin-bottom: 20px;
-      border: 1px solid #e5e5ea;
-    }
-
-    .display-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: #8e8e93;
-      text-transform: uppercase;
-    }
-
-    .queue-number {
-      font-size: 76px;
-      font-weight: 800;
-      color: #007aff;
-      line-height: 1;
-      margin: 6px 0;
-    }
-
-    .loket-status {
-      font-size: 18px;
-      font-weight: 600;
-      color: #3a3a3c;
-    }
-
-    /* List Card Loket 1 - 5 */
-    .loket-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .loket-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background-color: #f9f9fb;
-      border: 1px solid #e5e5ea;
-      padding: 14px 18px;
-      border-radius: 18px;
-    }
-
-    .loket-info {
-      display: flex;
-      flex-direction: column;
-      width: 130px;
-    }
-
-    .loket-title {
-      font-size: 22px;
-      font-weight: 800;
-      color: #1c1c1e;
-    }
-
-    .loket-last-num {
-      font-size: 12px;
-      color: #8e8e93;
-      margin-top: 2px;
-      font-weight: 500;
-    }
-
-    .loket-actions {
-      display: flex;
-      gap: 12px;
-      flex: 1;
-      justify-content: flex-end;
-    }
-
-    /* Tombol Panggil Next */
-    .btn-next {
-      background-color: #34c759;
-      color: #ffffff;
-      border: none;
-      border-radius: 14px;
-      padding: 12px 18px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-width: 170px;
-      box-shadow: 0 4px 10px rgba(52, 199, 89, 0.2);
-    }
-
-    .btn-next:active {
-      transform: scale(0.96);
-      background-color: #2fb34f;
-    }
-
-    .btn-next span {
-      font-size: 11px;
-      font-weight: 400;
-      opacity: 0.9;
-      margin-top: 2px;
-    }
-
-    /* Tombol Panggil Ulang Terpisah */
-    .btn-recall {
-      background-color: #007aff;
-      color: #ffffff;
-      border: none;
-      border-radius: 14px;
-      padding: 12px 18px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 10px rgba(0, 122, 255, 0.2);
-    }
-
-    .btn-recall:active {
-      transform: scale(0.96);
-      background-color: #0062cc;
-    }
-
-    /* Reset Harian */
-    .btn-reset {
-      width: 100%;
-      height: 48px;
-      background-color: #ff3b30;
-      color: #ffffff;
-      border: none;
-      border-radius: 12px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="ipad-container">
-    <div class="header">
-      <h1>Panel Operator Pusat</h1>
-      <div class="status-badge" id="loadingStatus">Menghubungkan ke Database...</div>
-    </div>
-
-    <!-- Tampilan Layar Utama -->
-    <div class="display-card">
-      <div class="display-label">Panggilan Terakhir</div>
-      <div class="queue-number" id="numDisplay">0</div>
-      <div class="loket-status" id="loketDisplay">Belum Ada Panggilan</div>
-    </div>
-
-    <!-- Daftar Loket 1 sampai 5 -->
-    <div class="loket-list">
+  async function loadData() {
+    try {
+      const response = await fetch(`${SCRIPT_URL}?action=get`);
+      const data = await response.json();
+      currentNumber = data.nomor;
+      currentLoket = data.loket;
       
-      <!-- Loket 1 -->
-      <div class="loket-card">
-        <div class="loket-info">
-          <div class="loket-title">LOKET 1</div>
-          <div class="loket-last-num" id="lastNumLoket1">Terakhir: -</div>
-        </div>
-        <div class="loket-actions">
-          <button class="btn-next" onclick="panggilKeLoket(1)">
-            PANGGIL NEXT
-            <span id="nextLabelLoket1">Panggil No. 1</span>
-          </button>
-          <button class="btn-recall" onclick="panggilUlangLoket(1)">PANGGIL ULANG</button>
-        </div>
-      </div>
-
-      <!-- Loket 2 -->
-      <div class="loket-card">
-        <div class="loket-info">
-          <div class="loket-title">LOKET 2</div>
-          <div class="loket-last-num" id="lastNumLoket2">Terakhir: -</div>
-        </div>
-        <div class="loket-actions">
-          <button class="btn-next" onclick="panggilKeLoket(2)">
-            PANGGIL NEXT
-            <span id="nextLabelLoket2">Panggil No. 1</span>
-          </button>
-          <button class="btn-recall" onclick="panggilUlangLoket(2)">PANGGIL ULANG</button>
-        </div>
-      </div>
-
-      <!-- Loket 3 -->
-      <div class="loket-card">
-        <div class="loket-info">
-          <div class="loket-title">LOKET 3</div>
-          <div class="loket-last-num" id="lastNumLoket3">Terakhir: -</div>
-        </div>
-        <div class="loket-actions">
-          <button class="btn-next" onclick="panggilKeLoket(3)">
-            PANGGIL NEXT
-            <span id="nextLabelLoket3">Panggil No. 1</span>
-          </button>
-          <button class="btn-recall" onclick="panggilUlangLoket(3)">PANGGIL ULANG</button>
-        </div>
-      </div>
-
-      <!-- Loket 4 -->
-      <div class="loket-card">
-        <div class="loket-info">
-          <div class="loket-title">LOKET 4</div>
-          <div class="loket-last-num" id="lastNumLoket4">Terakhir: -</div>
-        </div>
-        <div class="loket-actions">
-          <button class="btn-next" onclick="panggilKeLoket(4)">
-            PANGGIL NEXT
-            <span id="nextLabelLoket4">Panggil No. 1</span>
-          </button>
-          <button class="btn-recall" onclick="panggilUlangLoket(4)">PANGGIL ULANG</button>
-        </div>
-      </div>
-
-      <!-- Loket 5 -->
-      <div class="loket-card">
-        <div class="loket-info">
-          <div class="loket-title">LOKET 5</div>
-          <div class="loket-last-num" id="lastNumLoket5">Terakhir: -</div>
-        </div>
-        <div class="loket-actions">
-          <button class="btn-next" onclick="panggilKeLoket(5)">
-            PANGGIL NEXT
-            <span id="nextLabelLoket5">Panggil No. 1</span>
-          </button>
-          <button class="btn-recall" onclick="panggilUlangLoket(5)">PANGGIL ULANG</button>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Reset Harian -->
-    <button class="btn-reset" onclick="resetAntrean()">Reset Harian (Kembali ke 0)</button>
-  </div>
-
-  <script>
-    // MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Z72119TldddiORT6m8dsOEkDZlRTuaII_fjYCNnFbBEkGGnpwUsRp1T0JvdztUpH/exec"; 
-
-    const MAX_ANTREAN = 600;
-    let currentNumber = 0;
-    let currentLoket = 0;
-    let currentAudio = null;
-
-    // Nomor terakhir tiap loket
-    let lastNumberPerLoket = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-
-    loadData();
-
-    async function loadData() {
-      try {
-        const response = await fetch(`${SCRIPT_URL}?action=get`);
-        const data = await response.json();
-        currentNumber = data.nomor;
-        currentLoket = data.loket;
-        
-        if (currentLoket > 0 && currentNumber > 0) {
-          lastNumberPerLoket[currentLoket] = currentNumber;
-        }
-
-        updateUI();
-        document.getElementById('loadingStatus').innerText = "Terhubung ke Database";
-      } catch (err) {
-        document.getElementById('loadingStatus').innerText = "Gagal terhubung ke Database";
+      if (currentLoket > 0 && currentNumber > 0) {
+        lastNumberPerLoket[currentLoket] = currentNumber;
       }
-    }
-
-    function updateUI() {
-      // Update Display Atas
-      document.getElementById('numDisplay').innerText = currentNumber;
-      if (currentNumber > 0 && currentLoket > 0) {
-        document.getElementById('loketDisplay').innerText = `Menuju Loket ${currentLoket}`;
-      } else {
-        document.getElementById('loketDisplay').innerText = 'Belum Ada Panggilan';
-      }
-
-      // Update Teks Baris Loket
-      const nextNum = currentNumber < MAX_ANTREAN ? currentNumber + 1 : MAX_ANTREAN;
-      
-      for (let i = 1; i <= 5; i++) {
-        const lastEl = document.getElementById(`lastNumLoket${i}`);
-        if (lastEl) {
-          lastEl.innerText = lastNumberPerLoket[i] > 0 ? `Terakhir: No. ${lastNumberPerLoket[i]}` : 'Terakhir: -';
-        }
-
-        const nextLabelEl = document.getElementById(`nextLabelLoket${i}`);
-        if (nextLabelEl) {
-          nextLabelEl.innerText = currentNumber < MAX_ANTREAN ? `Panggil No. ${nextNum}` : `Batas Max (600)`;
-        }
-      }
-    }
-
-    async function panggilKeLoket(loketTarget) {
-      if (currentNumber >= MAX_ANTREAN) {
-        alert("Sudah mencapai batas maksimum 600!");
-        return;
-      }
-
-      currentNumber += 1;
-      currentLoket = loketTarget;
-      lastNumberPerLoket[loketTarget] = currentNumber;
 
       updateUI();
-      bersuara(currentNumber, currentLoket);
+      document.getElementById('loadingStatus').innerText = "Terhubung ke Database";
+    } catch (err) {
+      document.getElementById('loadingStatus').innerText = "Gagal terhubung ke Database";
+    }
+  }
 
-      // Kirim data ke Apps Script
+  function updateUI() {
+    document.getElementById('numDisplay').innerText = currentNumber;
+    if (currentNumber > 0 && currentLoket > 0) {
+      document.getElementById('loketDisplay').innerText = `Menuju Loket ${currentLoket}`;
+    } else {
+      document.getElementById('loketDisplay').innerText = 'Belum Ada Panggilan';
+    }
+
+    const nextNum = currentNumber < MAX_ANTREAN ? currentNumber + 1 : MAX_ANTREAN;
+    
+    for (let i = 1; i <= 5; i++) {
+      const lastEl = document.getElementById(`lastNumLoket${i}`);
+      if (lastEl) {
+        lastEl.innerText = lastNumberPerLoket[i] > 0 ? `Terakhir: No. ${lastNumberPerLoket[i]}` : 'Terakhir: -';
+      }
+
+      const nextLabelEl = document.getElementById(`nextLabelLoket${i}`);
+      if (nextLabelEl) {
+        nextLabelEl.innerText = currentNumber < MAX_ANTREAN ? `Panggil No. ${nextNum}` : `Batas Max (600)`;
+      }
+    }
+  }
+
+  async function panggilKeLoket(loketTarget) {
+    if (currentNumber >= MAX_ANTREAN) {
+      alert("Sudah mencapai batas maksimum 600!");
+      return;
+    }
+
+    currentNumber += 1;
+    currentLoket = loketTarget;
+    lastNumberPerLoket[loketTarget] = currentNumber;
+
+    updateUI();
+    bersuara(currentNumber, currentLoket);
+
+    try {
+      await fetch(`${SCRIPT_URL}?action=next&loket=${loketTarget}`);
+    } catch (e) {
+      console.error("Gagal sinkronisasi", e);
+    }
+  }
+
+  function panggilUlangLoket(loketTarget) {
+    const nomorTerakhir = lastNumberPerLoket[loketTarget];
+    if (!nomorTerakhir || nomorTerakhir === 0) {
+      alert(`Loket ${loketTarget} belum pernah memanggil antrean.`);
+      return;
+    }
+    
+    currentNumber = nomorTerakhir;
+    currentLoket = loketTarget;
+    updateUI();
+
+    bersuara(nomorTerakhir, loketTarget);
+  }
+
+  async function resetAntrean() {
+    if (confirm("Reset antrean harian kembali ke 0?")) {
+      currentNumber = 0;
+      currentLoket = 0;
+      lastNumberPerLoket = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      updateUI();
+
       try {
-        await fetch(`${SCRIPT_URL}?action=next&loket=${loketTarget}`);
+        await fetch(`${SCRIPT_URL}?action=reset`);
       } catch (e) {
-        console.error("Gagal sinkronisasi", e);
+        console.error("Gagal reset", e);
       }
     }
+  }
 
-    function panggilUlangLoket(loketTarget) {
-      const nomorTerakhir = lastNumberPerLoket[loketTarget];
-      if (!nomorTerakhir || nomorTerakhir === 0) {
-        alert(`Loket ${loketTarget} belum pernah memanggil antrean.`);
-        return;
-      }
-      
-      currentNumber = nomorTerakhir;
-      currentLoket = loketTarget;
-      updateUI();
-
-      bersuara(nomorTerakhir, loketTarget);
+  // ==========================================
+  // FUNGSI SUARA DENGAN FIX MACET / HANG
+  // ==========================================
+  function bersuara(nomor, loket) {
+    if (!('speechSynthesis' in window)) {
+      alert("Browser tidak mendukung fitur suara.");
+      return;
     }
 
-    async function resetAntrean() {
-      if (confirm("Reset antrean harian kembali ke 0?")) {
-        currentNumber = 0;
-        currentLoket = 0;
-        lastNumberPerLoket = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-        updateUI();
-
-        try {
-          await fetch(`${SCRIPT_URL}?action=reset`);
-        } catch (e) {
-          console.error("Gagal reset", e);
-        }
-      }
+    // 1. Force Reset Mesin Suara jika Statusnya 'Paused' atau 'Pending'
+    window.speechSynthesis.cancel();
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
     }
 
-    // FUNGSI SUARA GOOGLE AUDIO (TIDAK KEDOBEL)
-    function bersuara(nomor, loket) {
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-      }
+    const teks = `Nomor antrean ${nomor}, silakan menuju loket ${loket}`;
+    const utterance = new SpeechSynthesisUtterance(teks);
 
-      const teks = `Nomor antrean ${nomor}, silakan menuju loket ${loket}`;
-      const googleAudioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(teks)}&tl=id&client=tw-ob`;
+    utterance.lang = 'id-ID';
+    utterance.rate = 0.85; // Kecepatan bicara
+    utterance.pitch = 0.75; // Pitch nada cowok/berat
 
-      currentAudio = new Audio(googleAudioUrl);
-      currentAudio.play().catch(error => {
-        console.warn("Audio diblokir browser, klik layar iPad 1x terlebih dahulu:", error);
-      });
+    // 2. Pilih Suara Pria ID (Pria Apple / Google / Microsoft David)
+    const voices = window.speechSynthesis.getVoices();
+    const maleVoice = voices.find(v => 
+      (v.lang.includes('id') || v.lang.includes('ID')) && 
+      (
+        v.name.toLowerCase().includes('kyros') || 
+        v.name.toLowerCase().includes('damayan') || 
+        v.name.toLowerCase().includes('male') ||
+        v.name.toLowerCase().includes('pria') ||
+        v.name.toLowerCase().includes('ard')
+      )
+    );
+
+    if (maleVoice) {
+      utterance.voice = maleVoice;
     }
-  </script>
-</body>
-</html>
+
+    // 3. Eksekusi Panggilan dengan delay tipis (50ms) agar browser siap
+    setTimeout(() => {
+      window.speechSynthesis.speak(utterance);
+    }, 50);
+  }
+
+  // Inisialisasi daftar suara saat pertama dibuka
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = () => {
+      window.speechSynthesis.getVoices();
+    };
+  }
+</script>
