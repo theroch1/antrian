@@ -153,7 +153,7 @@
       margin-top: 2px;
     }
 
-    /* Tombol Panggil Ulang terpisah */
+    /* Tombol Panggil Ulang Terpisah */
     .btn-recall {
       background-color: #007aff;
       color: #ffffff;
@@ -206,7 +206,7 @@
     <!-- Daftar Loket 1 sampai 5 -->
     <div class="loket-list">
       
-      <!-- Baris Loket 1 -->
+      <!-- Loket 1 -->
       <div class="loket-card">
         <div class="loket-info">
           <div class="loket-title">LOKET 1</div>
@@ -221,7 +221,7 @@
         </div>
       </div>
 
-      <!-- Baris Loket 2 -->
+      <!-- Loket 2 -->
       <div class="loket-card">
         <div class="loket-info">
           <div class="loket-title">LOKET 2</div>
@@ -236,7 +236,7 @@
         </div>
       </div>
 
-      <!-- Baris Loket 3 -->
+      <!-- Loket 3 -->
       <div class="loket-card">
         <div class="loket-info">
           <div class="loket-title">LOKET 3</div>
@@ -251,7 +251,7 @@
         </div>
       </div>
 
-      <!-- Baris Loket 4 -->
+      <!-- Loket 4 -->
       <div class="loket-card">
         <div class="loket-info">
           <div class="loket-title">LOKET 4</div>
@@ -266,7 +266,7 @@
         </div>
       </div>
 
-      <!-- Baris Loket 5 -->
+      <!-- Loket 5 -->
       <div class="loket-card">
         <div class="loket-info">
           <div class="loket-title">LOKET 5</div>
@@ -289,13 +289,14 @@
 
   <script>
     // MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI
-    const SCRIPT_URL = "PASTE_URL_APPS_SCRIPT_DI_SINI"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Z72119TldddiORT6m8dsOEkDZlRTuaII_fjYCNnFbBEkGGnpwUsRp1T0JvdztUpH/exec"; 
 
     const MAX_ANTREAN = 600;
     let currentNumber = 0;
     let currentLoket = 0;
+    let currentAudio = null;
 
-    // Menyimpan nomor terakhir per loket
+    // Nomor terakhir tiap loket
     let lastNumberPerLoket = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 
     loadData();
@@ -319,7 +320,7 @@
     }
 
     function updateUI() {
-      // Update Layar Utama
+      // Update Display Atas
       document.getElementById('numDisplay').innerText = currentNumber;
       if (currentNumber > 0 && currentLoket > 0) {
         document.getElementById('loketDisplay').innerText = `Menuju Loket ${currentLoket}`;
@@ -327,17 +328,15 @@
         document.getElementById('loketDisplay').innerText = 'Belum Ada Panggilan';
       }
 
-      // Update Label & Terakhir di tiap baris loket tanpa merusak tombol
+      // Update Teks Baris Loket
       const nextNum = currentNumber < MAX_ANTREAN ? currentNumber + 1 : MAX_ANTREAN;
       
       for (let i = 1; i <= 5; i++) {
-        // Update Teks Terakhir
         const lastEl = document.getElementById(`lastNumLoket${i}`);
         if (lastEl) {
           lastEl.innerText = lastNumberPerLoket[i] > 0 ? `Terakhir: No. ${lastNumberPerLoket[i]}` : 'Terakhir: -';
         }
 
-        // Update Label No. Berikutnya
         const nextLabelEl = document.getElementById(`nextLabelLoket${i}`);
         if (nextLabelEl) {
           nextLabelEl.innerText = currentNumber < MAX_ANTREAN ? `Panggil No. ${nextNum}` : `Batas Max (600)`;
@@ -358,7 +357,7 @@
       updateUI();
       bersuara(currentNumber, currentLoket);
 
-      // Kirim data ke Google Apps Script di background
+      // Kirim data ke Apps Script
       try {
         await fetch(`${SCRIPT_URL}?action=next&loket=${loketTarget}`);
       } catch (e) {
@@ -395,15 +394,20 @@
       }
     }
 
+    // FUNGSI SUARA GOOGLE AUDIO (TIDAK KEDOBEL)
     function bersuara(nomor, loket) {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const teks = `Nomor antrean ${nomor}, silakan menuju loket ${loket}`;
-        const utterance = new SpeechSynthesisUtterance(teks);
-        utterance.lang = 'id-ID';
-        utterance.rate = 0.85;
-        window.speechSynthesis.speak(utterance);
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
       }
+
+      const teks = `Nomor antrean ${nomor}, silakan menuju loket ${loket}`;
+      const googleAudioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(teks)}&tl=id&client=tw-ob`;
+
+      currentAudio = new Audio(googleAudioUrl);
+      currentAudio.play().catch(error => {
+        console.warn("Audio diblokir browser, klik layar iPad 1x terlebih dahulu:", error);
+      });
     }
   </script>
 </body>
