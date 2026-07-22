@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Operator Antrean - iPad</title>
+  <title>Operator Antrean - iPad & Multi Device</title>
+  
+  <!-- SCRIPT SUARA NATURAL (RESPONSIVEVOICE) -->
+  <script src="https://code.responsivevoice.org/responsivevoice.js?key=FREE"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -48,7 +52,6 @@
       margin-top: 4px;
     }
 
-    /* Display Monitor Antrean */
     .display-card {
       background-color: #f2f2f7;
       border-radius: 18px;
@@ -79,7 +82,6 @@
       color: #3a3a3c;
     }
 
-    /* List Card Loket 1 - 5 */
     .loket-list {
       display: flex;
       flex-direction: column;
@@ -123,7 +125,6 @@
       justify-content: flex-end;
     }
 
-    /* Tombol Panggil Next */
     .btn-next {
       background-color: #34c759;
       color: #ffffff;
@@ -153,7 +154,6 @@
       margin-top: 2px;
     }
 
-    /* Tombol Panggil Ulang Terpisah */
     .btn-recall {
       background-color: #007aff;
       color: #ffffff;
@@ -174,7 +174,6 @@
       background-color: #0062cc;
     }
 
-    /* Reset Harian */
     .btn-reset {
       width: 100%;
       height: 48px;
@@ -294,9 +293,6 @@
     const MAX_ANTREAN = 600;
     let currentNumber = 0;
     let currentLoket = 0;
-    let currentAudio = null;
-
-    // Nomor terakhir tiap loket
     let lastNumberPerLoket = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 
     loadData();
@@ -320,7 +316,6 @@
     }
 
     function updateUI() {
-      // Update Display Atas
       document.getElementById('numDisplay').innerText = currentNumber;
       if (currentNumber > 0 && currentLoket > 0) {
         document.getElementById('loketDisplay').innerText = `Menuju Loket ${currentLoket}`;
@@ -328,7 +323,6 @@
         document.getElementById('loketDisplay').innerText = 'Belum Ada Panggilan';
       }
 
-      // Update Teks Baris Loket
       const nextNum = currentNumber < MAX_ANTREAN ? currentNumber + 1 : MAX_ANTREAN;
       
       for (let i = 1; i <= 5; i++) {
@@ -357,7 +351,6 @@
       updateUI();
       bersuara(currentNumber, currentLoket);
 
-      // Kirim data ke Apps Script
       try {
         await fetch(`${SCRIPT_URL}?action=next&loket=${loketTarget}`);
       } catch (e) {
@@ -394,20 +387,23 @@
       }
     }
 
-    // FUNGSI SUARA GOOGLE AUDIO (TIDAK KEDOBEL)
+    // ==========================================
+    // FUNGSI SUARA NATURAL (RESPONSIVEVOICE API)
+    // ==========================================
     function bersuara(nomor, loket) {
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
+      if (typeof responsiveVoice !== 'undefined') {
+        responsiveVoice.cancel(); // Hentikan audio sebelumnya jika ada
+        
+        const teks = `Nomor antrean ${nomor}, silakan menuju loket ${loket}`;
+        
+        // Memutar suara natural Bahasa Indonesia dengan kecepatan ideal
+        responsiveVoice.speak(teks, "Indonesian Female", {
+          rate: 0.85,
+          pitch: 0.9
+        });
+      } else {
+        alert("Pemuat suara belum siap, periksa koneksi internet Anda.");
       }
-
-      const teks = `Nomor antrean ${nomor}, silakan menuju loket ${loket}`;
-      const googleAudioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(teks)}&tl=id&client=tw-ob`;
-
-      currentAudio = new Audio(googleAudioUrl);
-      currentAudio.play().catch(error => {
-        console.warn("Audio diblokir browser, klik layar iPad 1x terlebih dahulu:", error);
-      });
     }
   </script>
 </body>
