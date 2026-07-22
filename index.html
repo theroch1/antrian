@@ -34,7 +34,7 @@
 
     .header {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
     .header h1 {
@@ -52,9 +52,9 @@
     .display-card {
       background-color: #f2f2f7;
       border-radius: 18px;
-      padding: 18px;
+      padding: 16px;
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       border: 1px solid #e5e5ea;
     }
 
@@ -66,7 +66,7 @@
     }
 
     .queue-number {
-      font-size: 80px;
+      font-size: 76px;
       font-weight: 800;
       color: #007aff;
       line-height: 1;
@@ -84,7 +84,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     .loket-card {
@@ -93,18 +93,18 @@
       justify-content: space-between;
       background-color: #f9f9fb;
       border: 1px solid #e5e5ea;
-      padding: 12px 16px;
-      border-radius: 16px;
+      padding: 14px 18px;
+      border-radius: 18px;
     }
 
     .loket-info {
       display: flex;
       flex-direction: column;
-      width: 120px;
+      width: 130px;
     }
 
     .loket-title {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 800;
       color: #1c1c1e;
     }
@@ -113,29 +113,31 @@
       font-size: 12px;
       color: #8e8e93;
       margin-top: 2px;
+      font-weight: 500;
     }
 
     .loket-actions {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       flex: 1;
       justify-content: flex-end;
     }
 
+    /* Tombol Panggil Next */
     .btn-next {
       background-color: #34c759;
       color: #ffffff;
       border: none;
-      border-radius: 12px;
-      padding: 12px 20px;
+      border-radius: 14px;
+      padding: 12px 18px;
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       min-width: 170px;
-      transition: transform 0.1s, background-color 0.15s;
       box-shadow: 0 4px 10px rgba(52, 199, 89, 0.2);
     }
 
@@ -148,29 +150,34 @@
       font-size: 11px;
       font-weight: 400;
       opacity: 0.9;
+      margin-top: 2px;
     }
 
+    /* Tombol Panggil Ulang terpisah */
     .btn-recall {
       background-color: #007aff;
       color: #ffffff;
       border: none;
-      border-radius: 12px;
-      padding: 12px 16px;
+      border-radius: 14px;
+      padding: 12px 18px;
       font-size: 15px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      transition: transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       box-shadow: 0 4px 10px rgba(0, 122, 255, 0.2);
     }
 
     .btn-recall:active {
       transform: scale(0.96);
+      background-color: #0062cc;
     }
 
     /* Reset Harian */
     .btn-reset {
       width: 100%;
-      height: 50px;
+      height: 48px;
       background-color: #ff3b30;
       color: #ffffff;
       border: none;
@@ -197,8 +204,83 @@
     </div>
 
     <!-- Daftar Loket 1 sampai 5 -->
-    <div class="loket-list" id="loketContainer">
-      <!-- Generasi Tombol via JavaScript -->
+    <div class="loket-list">
+      
+      <!-- Baris Loket 1 -->
+      <div class="loket-card">
+        <div class="loket-info">
+          <div class="loket-title">LOKET 1</div>
+          <div class="loket-last-num" id="lastNumLoket1">Terakhir: -</div>
+        </div>
+        <div class="loket-actions">
+          <button class="btn-next" onclick="panggilKeLoket(1)">
+            PANGGIL NEXT
+            <span id="nextLabelLoket1">Panggil No. 1</span>
+          </button>
+          <button class="btn-recall" onclick="panggilUlangLoket(1)">PANGGIL ULANG</button>
+        </div>
+      </div>
+
+      <!-- Baris Loket 2 -->
+      <div class="loket-card">
+        <div class="loket-info">
+          <div class="loket-title">LOKET 2</div>
+          <div class="loket-last-num" id="lastNumLoket2">Terakhir: -</div>
+        </div>
+        <div class="loket-actions">
+          <button class="btn-next" onclick="panggilKeLoket(2)">
+            PANGGIL NEXT
+            <span id="nextLabelLoket2">Panggil No. 1</span>
+          </button>
+          <button class="btn-recall" onclick="panggilUlangLoket(2)">PANGGIL ULANG</button>
+        </div>
+      </div>
+
+      <!-- Baris Loket 3 -->
+      <div class="loket-card">
+        <div class="loket-info">
+          <div class="loket-title">LOKET 3</div>
+          <div class="loket-last-num" id="lastNumLoket3">Terakhir: -</div>
+        </div>
+        <div class="loket-actions">
+          <button class="btn-next" onclick="panggilKeLoket(3)">
+            PANGGIL NEXT
+            <span id="nextLabelLoket3">Panggil No. 1</span>
+          </button>
+          <button class="btn-recall" onclick="panggilUlangLoket(3)">PANGGIL ULANG</button>
+        </div>
+      </div>
+
+      <!-- Baris Loket 4 -->
+      <div class="loket-card">
+        <div class="loket-info">
+          <div class="loket-title">LOKET 4</div>
+          <div class="loket-last-num" id="lastNumLoket4">Terakhir: -</div>
+        </div>
+        <div class="loket-actions">
+          <button class="btn-next" onclick="panggilKeLoket(4)">
+            PANGGIL NEXT
+            <span id="nextLabelLoket4">Panggil No. 1</span>
+          </button>
+          <button class="btn-recall" onclick="panggilUlangLoket(4)">PANGGIL ULANG</button>
+        </div>
+      </div>
+
+      <!-- Baris Loket 5 -->
+      <div class="loket-card">
+        <div class="loket-info">
+          <div class="loket-title">LOKET 5</div>
+          <div class="loket-last-num" id="lastNumLoket5">Terakhir: -</div>
+        </div>
+        <div class="loket-actions">
+          <button class="btn-next" onclick="panggilKeLoket(5)">
+            PANGGIL NEXT
+            <span id="nextLabelLoket5">Panggil No. 1</span>
+          </button>
+          <button class="btn-recall" onclick="panggilUlangLoket(5)">PANGGIL ULANG</button>
+        </div>
+      </div>
+
     </div>
 
     <!-- Reset Harian -->
@@ -213,40 +295,10 @@
     let currentNumber = 0;
     let currentLoket = 0;
 
-    // Menyimpan nomor terakhir yang dipanggil oleh masing-masing loket [Loket 1, 2, 3, 4, 5]
+    // Menyimpan nomor terakhir per loket
     let lastNumberPerLoket = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 
-    // Render daftar loket saat awal dibuka
-    renderLoketList();
     loadData();
-
-    function renderLoketList() {
-      const container = document.getElementById('loketContainer');
-      container.innerHTML = '';
-
-      for (let i = 1; i <= 5; i++) {
-        const lastNumText = lastNumberPerLoket[i] > 0 ? `Terakhir: No. ${lastNumberPerLoket[i]}` : 'Terakhir: -';
-        const nextNum = currentNumber < MAX_ANTREAN ? currentNumber + 1 : MAX_ANTREAN;
-        const nextLabelText = currentNumber < MAX_ANTREAN ? `Panggil No. ${nextNum}` : `Batas Max (600)`;
-
-        const cardHTML = `
-          <div class="loket-card">
-            <div class="loket-info">
-              <div class="loket-title">LOKET ${i}</div>
-              <div class="loket-last-num" id="lastNumLoket${i}">${lastNumText}</div>
-            </div>
-            <div class="loket-actions">
-              <button class="btn-recall" onclick="panggilUlangLoket(${i})">Ulang</button>
-              <button class="btn-next" onclick="panggilKeLoket(${i})">
-                PANGGIL NEXT
-                <span class="next-label">${nextLabelText}</span>
-              </button>
-            </div>
-          </div>
-        `;
-        container.innerHTML += cardHTML;
-      }
-    }
 
     async function loadData() {
       try {
@@ -267,16 +319,30 @@
     }
 
     function updateUI() {
+      // Update Layar Utama
       document.getElementById('numDisplay').innerText = currentNumber;
-      
       if (currentNumber > 0 && currentLoket > 0) {
         document.getElementById('loketDisplay').innerText = `Menuju Loket ${currentLoket}`;
       } else {
         document.getElementById('loketDisplay').innerText = 'Belum Ada Panggilan';
       }
 
-      // Update teks tombol & info loket
-      renderLoketList();
+      // Update Label & Terakhir di tiap baris loket tanpa merusak tombol
+      const nextNum = currentNumber < MAX_ANTREAN ? currentNumber + 1 : MAX_ANTREAN;
+      
+      for (let i = 1; i <= 5; i++) {
+        // Update Teks Terakhir
+        const lastEl = document.getElementById(`lastNumLoket${i}`);
+        if (lastEl) {
+          lastEl.innerText = lastNumberPerLoket[i] > 0 ? `Terakhir: No. ${lastNumberPerLoket[i]}` : 'Terakhir: -';
+        }
+
+        // Update Label No. Berikutnya
+        const nextLabelEl = document.getElementById(`nextLabelLoket${i}`);
+        if (nextLabelEl) {
+          nextLabelEl.innerText = currentNumber < MAX_ANTREAN ? `Panggil No. ${nextNum}` : `Batas Max (600)`;
+        }
+      }
     }
 
     async function panggilKeLoket(loketTarget) {
@@ -292,7 +358,7 @@
       updateUI();
       bersuara(currentNumber, currentLoket);
 
-      // Kirim data ke Apps Script
+      // Kirim data ke Google Apps Script di background
       try {
         await fetch(`${SCRIPT_URL}?action=next&loket=${loketTarget}`);
       } catch (e) {
@@ -307,7 +373,6 @@
         return;
       }
       
-      // Update display utama jika memanggil ulang
       currentNumber = nomorTerakhir;
       currentLoket = loketTarget;
       updateUI();
