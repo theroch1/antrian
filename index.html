@@ -396,15 +396,31 @@
     }
 
     function bersuara(nomor, loket) {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const teks = `Nomor antrean ${nomor}, silakan menuju loket ${loket}`;
-        const utterance = new SpeechSynthesisUtterance(teks);
-        utterance.lang = 'id-ID';
-        utterance.rate = 0.85;
-        window.speechSynthesis.speak(utterance);
-      }
-    }
+  // Susun teks panggilan
+  const teks = `Nomor antrean ${nomor}, silakan menuju loket ${loket}`;
+  
+  // URL Service Google Translate Text-to-Speech (Bahasa Indonesia)
+  const googleAudioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(teks)}&tl=id&client=tw-ob`;
+
+  // Buat objek Audio
+  const audio = new Audio(googleAudioUrl);
+  
+  // Atur pitch/kecepatan jika diperlukan
+  audio.playbackRate = 0.9; 
+
+  // Hentikan suara sebelumnya jika tombol ditekan beruntun
+  if (window.currentAntreanAudio) {
+    window.currentAntreanAudio.pause();
+    window.currentAntreanAudio.currentTime = 0;
+  }
+
+  window.currentAntreanAudio = audio;
+
+  // Putar Audio
+  audio.play().catch(error => {
+    console.log("Audio diblokir browser, pastikan sudah ada interaksi klik:", error);
+  });
+}
   </script>
 </body>
 </html>
