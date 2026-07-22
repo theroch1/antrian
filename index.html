@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Operator Antrean - iPad & Multi Device</title>
+  <title>Operator Antrean - Multi Device</title>
   
-  <!-- SCRIPT SUARA NATURAL (RESPONSIVEVOICE) -->
+  <!-- SCRIPT SUARA UTAMA -->
   <script src="https://code.responsivevoice.org/responsivevoice.js?key=FREE"></script>
 
   <style>
@@ -282,18 +282,17 @@
 
     </div>
 
-    <!-- Reset Harian -->
     <button class="btn-reset" onclick="resetAntrean()">Reset Harian (Kembali ke 0)</button>
   </div>
 
   <script>
-    // MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Z72119TldddiORT6m8dsOEkDZlRTuaII_fjYCNnFbBEkGGnpwUsRp1T0JvdztUpH/exec"; 
 
     const MAX_ANTREAN = 600;
     let currentNumber = 0;
     let currentLoket = 0;
     let lastNumberPerLoket = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    let currentAudioObj = null;
 
     loadData();
 
@@ -387,22 +386,56 @@
       }
     }
 
-    // ==========================================
-    // FUNGSI SUARA NATURAL (RESPONSIVEVOICE API)
-    // ==========================================
+    // ========================================================
+    // MESIN SUARA MULTI-FALLBACK (RESPONSIVEVOICE -> GOOGLE -> NATIVE)
+    // ========================================================
     function bersuara(nomor, loket) {
-      if (typeof responsiveVoice !== 'undefined') {
-        responsiveVoice.cancel(); // Hentikan audio sebelumnya jika ada
-        
-        const teks = `Nomor antrean ${nomor}, silakan menuju loket ${loket}`;
-        
-        // Memutar suara natural Bahasa Indonesia dengan kecepatan ideal
+      const teks = `Nomor antrean ${nomor}, silakan menuju loket ${loket}`;
+
+      // Hentikan semua audio yang sedang berjalan
+      if (currentAudioObj) {
+        currentAudioObj.pause();
+        currentAudioObj.currentTime = 0;
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+
+      // OPSI 1: ResponsiveVoice
+      if (typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()) {
+        responsiveVoice.cancel();
         responsiveVoice.speak(teks, "Indonesian Female", {
           rate: 0.85,
-          pitch: 0.9
+          pitch: 0.9,
+          onerror: function() {
+            // Jika ResponsiveVoice error, panggil Opsi 2 (Google Audio)
+            playGoogleAudio(teks);
+          }
         });
       } else {
-        alert("Pemuat suara belum siap, periksa koneksi internet Anda.");
+        // Jika ResponsiveVoice gagal dimuat, langsung Opsi 2
+        playGoogleAudio(teks);
+      }
+    }
+
+    // OPSI 2: Google Audio Stream Engine
+    function playGoogleAudio(teks) {
+      const googleAudioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(teks)}&tl=id&client=tw-ob`;
+      currentAudioObj = new Audio(googleAudioUrl);
+      
+      currentAudioObj.play().catch(() => {
+        // Jika Google Audio diblokir browser, panggil Opsi 3 (Web Speech API Native)
+        playNativeSpeech(teks);
+      });
+    }
+
+    // OPSI 3: Web Speech API Bawaan Perangkat
+    function playNativeSpeech(teks) {
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(teks);
+        utterance.lang = 'id-ID';
+        utterance.rate = 0.85;
+        window.speechSynthesis.speak(utterance);
       }
     }
   </script>
