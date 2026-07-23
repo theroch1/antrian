@@ -386,58 +386,92 @@
       }
     }
 
-    // ========================================================
-    // MESIN SUARA MULTI-FALLBACK (RESPONSIVEVOICE -> GOOGLE -> NATIVE)
-    // ========================================================
-    function bersuara(nomor, loket) {
-      const teks = `Nomor antrean ${nomor}, silakan menuju loket ${loket}`;
+   // ========================================================
+  // SISTEM ANTREAN AUDIO (AUDIO QUEUE SYSTEM)
+  // ========================================================
+  let audioQueue = []; // Menampung daftar kalimat yang antre dipanggil
+  let isSpeaking = false; // Status apakah audio sedang berbunyi
 
-      // Hentikan semua audio yang sedang berjalan
-      if (currentAudioObj) {
-        currentAudioObj.pause();
-        currentAudioObj.currentTime = 0;
-      }
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
+  // 1. Fungsi Utama saat Tombol Panggil Diklik
+  function bersuara(nomor, loket) {
+    const teks = `Nomor antrean ${nomor}, silakan menuju loket ${loket}`;
+    
+    // Masukkan kalimat panggilan ke dalam antrean
+    audioQueue.push(teks);
 
-      // OPSI 1: ResponsiveVoice
-      if (typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()) {
-        responsiveVoice.cancel();
-        responsiveVoice.speak(teks, "Indonesian Female", {
-          rate: 0.85,
-          pitch: 0.9,
-          onerror: function() {
-            // Jika ResponsiveVoice error, panggil Opsi 2 (Google Audio)
-            playGoogleAudio(teks);
-          }
-        });
-      } else {
-        // Jika ResponsiveVoice gagal dimuat, langsung Opsi 2
-        playGoogleAudio(teks);
-      }
+    // Jika mesin audio sedang tidak memutar apapun, jalankan antrean
+    if (!isSpeaking) {
+      processAudioQueue();
+    }
+  }
+
+  // 2. Fungsi untuk Memproses Antrean Audio Satu per Satu
+  function processAudioQueue() {
+    // Jika antrean kosong, hentikan proses
+    if (audioQueue.length === 0) {
+      isSpeaking = false;
+      return;
     }
 
-    // OPSI 2: Google Audio Stream Engine
-    function playGoogleAudio(teks) {
-      const googleAudioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(teks)}&tl=id&client=tw-ob`;
-      currentAudioObj = new Audio(googleAudioUrl);
-      
-      currentAudioObj.play().catch(() => {
-        // Jika Google Audio diblokir browser, panggil Opsi 3 (Web Speech API Native)
-        playNativeSpeech(teks);
+    isSpeaking = true;
+    const teksBerikutnya = audioQueue.shift(); // Ambil kalimat paling awal di antrean
+
+    // OPSI 1: Menggunakan ResponsiveVoice
+    if (typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()) {
+      responsiveVoice.speak(teksBerikutnya, "Indonesian Female", {
+        rate: 0.85,
+        pitch: 0.9,
+        onend: function() {
+          // Ketika audio selesai berbunyi, lanjut ke antrean berikutnya
+          processAudioQueue();
+        },
+        onerror: function() {
+          // Jika ResponsiveVoice gagal, gunakan Google Audio
+          playGoogleAudioQueue(teksBerikutnya);
+        }
       });
+    } else {
+      // OPSI 2: Fallback ke Google Audio
+      playGoogleAudioQueue(teksBerikutnya);
     }
+  }
 
-    // OPSI 3: Web Speech API Bawaan Perangkat
-    function playNativeSpeech(teks) {
-      if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(teks);
-        utterance.lang = 'id-ID';
-        utterance.rate = 0.85;
-        window.speechSynthesis.speak(utterance);
-      }
+  // OPSI 2: Fallback Google Audio Stream
+  function playGoogleAudioQueue(teks) {
+    const googleAudioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(teks)}&tl=id&client=tw-ob`;
+    currentAudioObj = new Audio(googleAudioUrl);
+    
+    // Saat audio selesai diputar (Event 'ended')
+    currentAudioObj.onended = function() {
+      processAudioQueue();
+    };
+
+    currentAudioObj.play().catch(() => {
+      // OPSI 3: Fallback ke Native Speech jika Google diblokir
+      playNativeSpeechQueue(teks);
+    });
+  }
+
+  // OPSI 3: Fallback Web Speech API Native
+  function playNativeSpeechQueue(teks) {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(teks);
+      utterance.lang = 'id-ID';
+      utterance.rate = 0.85;
+
+      utterance.onend = function() {
+        processAudioQueue();
+      };
+
+      utterance.onerror = function() {
+        processAudioQueue();
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } else {
+      processAudioQueue();
     }
+  }
   </script>
 </body>
 </html>
