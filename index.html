@@ -83,6 +83,53 @@
       color: #3a3a3c;
     }
 
+    /* Panel Menu Set Start Number */
+    .start-num-box {
+      background: #eef7ff;
+      border: 1px solid #b3d7ff;
+      border-radius: 16px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .start-num-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .start-num-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0056b3;
+    }
+
+    .start-num-desc {
+      font-size: 11px;
+      color: #5588cc;
+    }
+
+    .btn-set-num {
+      background: #007aff;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 122, 255, 0.2);
+    }
+
+    .btn-set-num:active {
+      transform: scale(0.96);
+      background: #0056b3;
+    }
+
     /* Panel Nomor Terlewat */
     .skipped-box {
       background: #fff9e6;
@@ -237,7 +284,16 @@
       <div class="loket-status" id="loketDisplay">Belum Ada Panggilan</div>
     </div>
 
-    <!-- Kotak Daftar Nomor yang Terlewat (Belum Dilayani) -->
+    <!-- Menu Atur Mulai Nomor -->
+    <div class="start-num-box">
+      <div class="start-num-info">
+        <span class="start-num-title">🔢 Urutan Nomor Selanjutnya: <strong id="nextQueueLabel">1</strong></span>
+        <span class="start-num-desc">Ingin lompat atau panggil mulai dari nomor tertentu?</span>
+      </div>
+      <button class="btn-set-num" onclick="setNomorAwal()">Atur Mulai Nomor</button>
+    </div>
+
+    <!-- Kotak Daftar Nomor Terlewat -->
     <div class="skipped-box">
       <div class="skipped-title">⚠️ Nomor Belum Dilayani (Terlewat):</div>
       <div class="skipped-list" id="skippedContainer">
@@ -247,8 +303,6 @@
 
     <!-- Daftar Loket 1 sampai 5 -->
     <div class="loket-list">
-      
-      <!-- Template Loop untuk Loket 1 - 5 -->
       <script>
         for (let i = 1; i <= 5; i++) {
           document.write(`
@@ -272,7 +326,6 @@
           `);
         }
       </script>
-
     </div>
 
     <button class="btn-reset" onclick="resetAntrean()">Reset Harian (Kembali ke 0)</button>
@@ -282,9 +335,9 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Z72119TldddiORT6m8dsOEkDZlRTuaII_fjYCNnFbBEkGGnpwUsRp1T0JvdztUpH/exec"; 
 
     const MAX_ANTREAN = 600;
-    let nextQueueNumber = 1; // Nomor antrean berikutnya yang akan diambil
-    let currentServing = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }; // Nomor yang sedang dilayani di tiap loket
-    let skippedNumbers = []; // Daftar nomor yang dilewati/belum dilayani
+    let nextQueueNumber = 1; // Nomor antrean berikutnya yang akan dipanggil
+    let currentServing = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    let skippedNumbers = [];
     let lastCalled = { num: 0, loket: 0 };
 
     loadData();
@@ -297,6 +350,7 @@
         if (data.nomor) {
           lastCalled.num = data.nomor;
           lastCalled.loket = data.loket;
+          nextQueueNumber = data.nomor + 1; // Otomatis menyiapkan nomor selanjutnya
         }
 
         updateUI();
@@ -307,7 +361,7 @@
     }
 
     function updateUI() {
-      // Update Layar Utama
+      // Update Display Monitor
       document.getElementById('numDisplay').innerText = lastCalled.num;
       if (lastCalled.num > 0 && lastCalled.loket > 0) {
         document.getElementById('loketDisplay').innerText = `Menuju Loket ${lastCalled.loket}`;
@@ -315,7 +369,10 @@
         document.getElementById('loketDisplay').innerText = 'Belum Ada Panggilan';
       }
 
-      // Update Tampilan Tiap Loket
+      // Update Label Nomor Berikutnya
+      document.getElementById('nextQueueLabel').innerText = nextQueueNumber <= MAX_ANTREAN ? nextQueueNumber : 'Mencapai Maksimum';
+
+      // Update Status Loket
       for (let i = 1; i <= 5; i++) {
         const activeEl = document.getElementById(`activeNumLoket${i}`);
         if (activeEl) {
@@ -334,7 +391,22 @@
       }
     }
 
-    // 1. TOMBOL BERIKUTNYA (Orang Ada & Selesai Dilayani)
+    // FUNGSI: ATUR MULAI DARI NOMOR BERAPA
+    function setNomorAwal() {
+      const inputVal = prompt(`Masukkan nomor awal yang ingin dipanggil selanjutnya (1 - ${MAX_ANTREAN}):`, nextQueueNumber);
+      if (inputVal !== null) {
+        const targetNum = parseInt(inputVal);
+        if (targetNum >= 1 && targetNum <= MAX_ANTREAN) {
+          nextQueueNumber = targetNum;
+          updateUI();
+          alert(`Berhasil! Panggilan berikutnya (tombol BERIKUTNYA / LEWATI) akan dimulai dari Nomor ${nextQueueNumber}.`);
+        } else {
+          alert("Nomor tidak valid! Harap masukkan angka antara 1 sampai 600.");
+        }
+      }
+    }
+
+    // 1. TOMBOL BERIKUTNYA
     function aksiBerikutnya(loket) {
       if (nextQueueNumber > MAX_ANTREAN) {
         alert("Antrean sudah mencapai batas maksimum (600)!");
@@ -342,7 +414,7 @@
       }
 
       const numToCall = nextQueueNumber;
-      nextQueueNumber++; // Naikkan counter antrean pusat
+      nextQueueNumber++; // Urutan nomor naik 1
 
       currentServing[loket] = numToCall;
       lastCalled = { num: numToCall, loket: loket };
@@ -352,9 +424,8 @@
       syncToDatabase(numToCall, loket);
     }
 
-    // 2. TOMBOL LEWATI (Orang Tidak Ada / Belum Dilayani)
+    // 2. TOMBOL LEWATI
     function aksiLewati(loket) {
-      // Jika loket tersebut sedang memegang nomor, masukkan nomor lama tersebut ke daftar "Terlewat"
       if (currentServing[loket] > 0) {
         if (!skippedNumbers.includes(currentServing[loket])) {
           skippedNumbers.push(currentServing[loket]);
@@ -362,7 +433,6 @@
         }
       }
 
-      // Langsung panggil antrean berikutnya
       if (nextQueueNumber <= MAX_ANTREAN) {
         const numToCall = nextQueueNumber;
         nextQueueNumber++;
@@ -380,7 +450,7 @@
       }
     }
 
-    // 3. TOMBOL PANGGIL ULANG (Memanggil Nomor yang Sedang Ditangani Loket Ini)
+    // 3. TOMBOL PANGGIL ULANG (RE-CALL)
     function panggilUlang(loket) {
       const numToCall = currentServing[loket];
       if (!numToCall || numToCall === 0) {
@@ -393,13 +463,12 @@
       bersuara(numToCall, loket);
     }
 
-    // Memanggil ulang nomor yang terlewat jika diklik tag-nya di atas
+    // Memanggil ulang nomor yang terlewat
     function panggilNomorTerlewat(nomor) {
       const loketPilihan = prompt(`Panggil Nomor Terlewat (${nomor}) ke Loket berapa? (1-5)`, "1");
       const loket = parseInt(loketPilihan);
 
       if (loket >= 1 && loket <= 5) {
-        // Hapus dari daftar terlewat
         skippedNumbers = skippedNumbers.filter(n => n !== nomor);
 
         currentServing[loket] = nomor;
