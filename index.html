@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Operator Antrean - Multi Device</title>
+  <title>Operator Antrean - Multi Loket</title>
   
   <!-- SCRIPT SUARA UTAMA -->
   <script src="https://code.responsivevoice.org/responsivevoice.js?key=FREE"></script>
@@ -30,7 +30,7 @@
     .ipad-container {
       background: #ffffff;
       width: 100%;
-      max-width: 760px;
+      max-width: 800px;
       border-radius: 24px;
       padding: 28px;
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
@@ -52,12 +52,13 @@
       margin-top: 4px;
     }
 
+    /* Display Main Monitor */
     .display-card {
       background-color: #f2f2f7;
       border-radius: 18px;
       padding: 16px;
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       border: 1px solid #e5e5ea;
     }
 
@@ -69,7 +70,7 @@
     }
 
     .queue-number {
-      font-size: 76px;
+      font-size: 72px;
       font-weight: 800;
       color: #007aff;
       line-height: 1;
@@ -82,96 +83,130 @@
       color: #3a3a3c;
     }
 
+    /* Panel Nomor Terlewat */
+    .skipped-box {
+      background: #fff9e6;
+      border: 1px solid #ffe082;
+      border-radius: 14px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+    }
+
+    .skipped-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #b78103;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .skipped-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .skipped-tag {
+      background: #ff9500;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .skipped-empty {
+      font-size: 13px;
+      color: #a1887f;
+      font-style: italic;
+    }
+
+    /* List Card Loket */
     .loket-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
       margin-bottom: 20px;
     }
 
     .loket-card {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      flex-direction: column;
       background-color: #f9f9fb;
       border: 1px solid #e5e5ea;
-      padding: 14px 18px;
+      padding: 16px;
       border-radius: 18px;
+      gap: 12px;
+    }
+
+    @media (min-width: 600px) {
+      .loket-card {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
     }
 
     .loket-info {
       display: flex;
       flex-direction: column;
-      width: 130px;
     }
 
     .loket-title {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 800;
       color: #1c1c1e;
     }
 
     .loket-last-num {
-      font-size: 12px;
-      color: #8e8e93;
+      font-size: 13px;
+      color: #007aff;
       margin-top: 2px;
-      font-weight: 500;
+      font-weight: 700;
     }
 
+    /* 3 Tombol Aksi */
     .loket-actions {
       display: flex;
-      gap: 12px;
+      gap: 8px;
       flex: 1;
       justify-content: flex-end;
     }
 
-    .btn-next {
-      background-color: #34c759;
-      color: #ffffff;
+    .btn-action {
       border: none;
-      border-radius: 14px;
-      padding: 12px 18px;
-      font-size: 16px;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13px;
       font-weight: 700;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-width: 170px;
-      box-shadow: 0 4px 10px rgba(52, 199, 89, 0.2);
+      flex: 1;
+      max-width: 130px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     }
 
-    .btn-next:active {
+    .btn-action:active {
       transform: scale(0.96);
-      background-color: #2fb34f;
     }
 
-    .btn-next span {
-      font-size: 11px;
-      font-weight: 400;
-      opacity: 0.9;
-      margin-top: 2px;
+    .btn-next {
+      background-color: #34c759;
+      color: #ffffff;
+    }
+
+    .btn-skip {
+      background-color: #ff9500;
+      color: #ffffff;
     }
 
     .btn-recall {
       background-color: #007aff;
       color: #ffffff;
-      border: none;
-      border-radius: 14px;
-      padding: 12px 18px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 10px rgba(0, 122, 255, 0.2);
-    }
-
-    .btn-recall:active {
-      transform: scale(0.96);
-      background-color: #0062cc;
     }
 
     .btn-reset {
@@ -195,90 +230,48 @@
       <div class="status-badge" id="loadingStatus">Menghubungkan ke Database...</div>
     </div>
 
-    <!-- Tampilan Layar Utama -->
+    <!-- Display Utama -->
     <div class="display-card">
       <div class="display-label">Panggilan Terakhir</div>
       <div class="queue-number" id="numDisplay">0</div>
       <div class="loket-status" id="loketDisplay">Belum Ada Panggilan</div>
     </div>
 
+    <!-- Kotak Daftar Nomor yang Terlewat (Belum Dilayani) -->
+    <div class="skipped-box">
+      <div class="skipped-title">⚠️ Nomor Belum Dilayani (Terlewat):</div>
+      <div class="skipped-list" id="skippedContainer">
+        <span class="skipped-empty">Tidak ada nomor terlewat</span>
+      </div>
+    </div>
+
     <!-- Daftar Loket 1 sampai 5 -->
     <div class="loket-list">
       
-      <!-- Loket 1 -->
-      <div class="loket-card">
-        <div class="loket-info">
-          <div class="loket-title">LOKET 1</div>
-          <div class="loket-last-num" id="lastNumLoket1">Terakhir: -</div>
-        </div>
-        <div class="loket-actions">
-          <button class="btn-next" onclick="panggilKeLoket(1)">
-            PANGGIL NEXT
-            <span id="nextLabelLoket1">Panggil No. 1</span>
-          </button>
-          <button class="btn-recall" onclick="panggilUlangLoket(1)">PANGGIL ULANG</button>
-        </div>
-      </div>
-
-      <!-- Loket 2 -->
-      <div class="loket-card">
-        <div class="loket-info">
-          <div class="loket-title">LOKET 2</div>
-          <div class="loket-last-num" id="lastNumLoket2">Terakhir: -</div>
-        </div>
-        <div class="loket-actions">
-          <button class="btn-next" onclick="panggilKeLoket(2)">
-            PANGGIL NEXT
-            <span id="nextLabelLoket2">Panggil No. 1</span>
-          </button>
-          <button class="btn-recall" onclick="panggilUlangLoket(2)">PANGGIL ULANG</button>
-        </div>
-      </div>
-
-      <!-- Loket 3 -->
-      <div class="loket-card">
-        <div class="loket-info">
-          <div class="loket-title">LOKET 3</div>
-          <div class="loket-last-num" id="lastNumLoket3">Terakhir: -</div>
-        </div>
-        <div class="loket-actions">
-          <button class="btn-next" onclick="panggilKeLoket(3)">
-            PANGGIL NEXT
-            <span id="nextLabelLoket3">Panggil No. 1</span>
-          </button>
-          <button class="btn-recall" onclick="panggilUlangLoket(3)">PANGGIL ULANG</button>
-        </div>
-      </div>
-
-      <!-- Loket 4 -->
-      <div class="loket-card">
-        <div class="loket-info">
-          <div class="loket-title">LOKET 4</div>
-          <div class="loket-last-num" id="lastNumLoket4">Terakhir: -</div>
-        </div>
-        <div class="loket-actions">
-          <button class="btn-next" onclick="panggilKeLoket(4)">
-            PANGGIL NEXT
-            <span id="nextLabelLoket4">Panggil No. 1</span>
-          </button>
-          <button class="btn-recall" onclick="panggilUlangLoket(4)">PANGGIL ULANG</button>
-        </div>
-      </div>
-
-      <!-- Loket 5 -->
-      <div class="loket-card">
-        <div class="loket-info">
-          <div class="loket-title">LOKET 5</div>
-          <div class="loket-last-num" id="lastNumLoket5">Terakhir: -</div>
-        </div>
-        <div class="loket-actions">
-          <button class="btn-next" onclick="panggilKeLoket(5)">
-            PANGGIL NEXT
-            <span id="nextLabelLoket5">Panggil No. 1</span>
-          </button>
-          <button class="btn-recall" onclick="panggilUlangLoket(5)">PANGGIL ULANG</button>
-        </div>
-      </div>
+      <!-- Template Loop untuk Loket 1 - 5 -->
+      <script>
+        for (let i = 1; i <= 5; i++) {
+          document.write(`
+            <div class="loket-card">
+              <div class="loket-info">
+                <div class="loket-title">LOKET ${i}</div>
+                <div class="loket-last-num" id="activeNumLoket${i}">Sedang Melayani: -</div>
+              </div>
+              <div class="loket-actions">
+                <button class="btn-action btn-next" onclick="aksiBerikutnya(${i})">
+                  BERIKUTNYA
+                </button>
+                <button class="btn-action btn-skip" onclick="aksiLewati(${i})">
+                  LEWATI
+                </button>
+                <button class="btn-action btn-recall" onclick="panggilUlang(${i})">
+                  RE-CALL
+                </button>
+              </div>
+            </div>
+          `);
+        }
+      </script>
 
     </div>
 
@@ -289,10 +282,10 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz2Z72119TldddiORT6m8dsOEkDZlRTuaII_fjYCNnFbBEkGGnpwUsRp1T0JvdztUpH/exec"; 
 
     const MAX_ANTREAN = 600;
-    let currentNumber = 0;
-    let currentLoket = 0;
-    let lastNumberPerLoket = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    let currentAudioObj = null;
+    let nextQueueNumber = 1; // Nomor antrean berikutnya yang akan diambil
+    let currentServing = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }; // Nomor yang sedang dilayani di tiap loket
+    let skippedNumbers = []; // Daftar nomor yang dilewati/belum dilayani
+    let lastCalled = { num: 0, loket: 0 };
 
     loadData();
 
@@ -300,11 +293,10 @@
       try {
         const response = await fetch(`${SCRIPT_URL}?action=get`);
         const data = await response.json();
-        currentNumber = data.nomor;
-        currentLoket = data.loket;
         
-        if (currentLoket > 0 && currentNumber > 0) {
-          lastNumberPerLoket[currentLoket] = currentNumber;
+        if (data.nomor) {
+          lastCalled.num = data.nomor;
+          lastCalled.loket = data.loket;
         }
 
         updateUI();
@@ -315,67 +307,125 @@
     }
 
     function updateUI() {
-      document.getElementById('numDisplay').innerText = currentNumber;
-      if (currentNumber > 0 && currentLoket > 0) {
-        document.getElementById('loketDisplay').innerText = `Menuju Loket ${currentLoket}`;
+      // Update Layar Utama
+      document.getElementById('numDisplay').innerText = lastCalled.num;
+      if (lastCalled.num > 0 && lastCalled.loket > 0) {
+        document.getElementById('loketDisplay').innerText = `Menuju Loket ${lastCalled.loket}`;
       } else {
         document.getElementById('loketDisplay').innerText = 'Belum Ada Panggilan';
       }
 
-      const nextNum = currentNumber < MAX_ANTREAN ? currentNumber + 1 : MAX_ANTREAN;
-      
+      // Update Tampilan Tiap Loket
       for (let i = 1; i <= 5; i++) {
-        const lastEl = document.getElementById(`lastNumLoket${i}`);
-        if (lastEl) {
-          lastEl.innerText = lastNumberPerLoket[i] > 0 ? `Terakhir: No. ${lastNumberPerLoket[i]}` : 'Terakhir: -';
+        const activeEl = document.getElementById(`activeNumLoket${i}`);
+        if (activeEl) {
+          activeEl.innerText = currentServing[i] > 0 ? `Sedang Melayani: No. ${currentServing[i]}` : 'Sedang Melayani: -';
         }
+      }
 
-        const nextLabelEl = document.getElementById(`nextLabelLoket${i}`);
-        if (nextLabelEl) {
-          nextLabelEl.innerText = currentNumber < MAX_ANTREAN ? `Panggil No. ${nextNum}` : `Batas Max (600)`;
-        }
+      // Update Daftar Nomor Terlewat
+      const skippedContainer = document.getElementById('skippedContainer');
+      if (skippedNumbers.length === 0) {
+        skippedContainer.innerHTML = '<span class="skipped-empty">Tidak ada nomor terlewat</span>';
+      } else {
+        skippedContainer.innerHTML = skippedNumbers.map(num => 
+          `<span class="skipped-tag" onclick="panggilNomorTerlewat(${num})">No. ${num}</span>`
+        ).join('');
       }
     }
 
-    async function panggilKeLoket(loketTarget) {
-      if (currentNumber >= MAX_ANTREAN) {
-        alert("Sudah mencapai batas maksimum 600!");
+    // 1. TOMBOL BERIKUTNYA (Orang Ada & Selesai Dilayani)
+    function aksiBerikutnya(loket) {
+      if (nextQueueNumber > MAX_ANTREAN) {
+        alert("Antrean sudah mencapai batas maksimum (600)!");
         return;
       }
 
-      currentNumber += 1;
-      currentLoket = loketTarget;
-      lastNumberPerLoket[loketTarget] = currentNumber;
+      const numToCall = nextQueueNumber;
+      nextQueueNumber++; // Naikkan counter antrean pusat
+
+      currentServing[loket] = numToCall;
+      lastCalled = { num: numToCall, loket: loket };
 
       updateUI();
-      bersuara(currentNumber, currentLoket);
+      bersuara(numToCall, loket);
+      syncToDatabase(numToCall, loket);
+    }
 
+    // 2. TOMBOL LEWATI (Orang Tidak Ada / Belum Dilayani)
+    function aksiLewati(loket) {
+      // Jika loket tersebut sedang memegang nomor, masukkan nomor lama tersebut ke daftar "Terlewat"
+      if (currentServing[loket] > 0) {
+        if (!skippedNumbers.includes(currentServing[loket])) {
+          skippedNumbers.push(currentServing[loket]);
+          skippedNumbers.sort((a, b) => a - b);
+        }
+      }
+
+      // Langsung panggil antrean berikutnya
+      if (nextQueueNumber <= MAX_ANTREAN) {
+        const numToCall = nextQueueNumber;
+        nextQueueNumber++;
+
+        currentServing[loket] = numToCall;
+        lastCalled = { num: numToCall, loket: loket };
+
+        updateUI();
+        bersuara(numToCall, loket);
+        syncToDatabase(numToCall, loket);
+      } else {
+        currentServing[loket] = 0;
+        updateUI();
+        alert("Antrean reguler sudah habis!");
+      }
+    }
+
+    // 3. TOMBOL PANGGIL ULANG (Memanggil Nomor yang Sedang Ditangani Loket Ini)
+    function panggilUlang(loket) {
+      const numToCall = currentServing[loket];
+      if (!numToCall || numToCall === 0) {
+        alert(`Loket ${loket} belum memanggil nomor apapun.`);
+        return;
+      }
+
+      lastCalled = { num: numToCall, loket: loket };
+      updateUI();
+      bersuara(numToCall, loket);
+    }
+
+    // Memanggil ulang nomor yang terlewat jika diklik tag-nya di atas
+    function panggilNomorTerlewat(nomor) {
+      const loketPilihan = prompt(`Panggil Nomor Terlewat (${nomor}) ke Loket berapa? (1-5)`, "1");
+      const loket = parseInt(loketPilihan);
+
+      if (loket >= 1 && loket <= 5) {
+        // Hapus dari daftar terlewat
+        skippedNumbers = skippedNumbers.filter(n => n !== nomor);
+
+        currentServing[loket] = nomor;
+        lastCalled = { num: nomor, loket: loket };
+
+        updateUI();
+        bersuara(nomor, loket);
+        syncToDatabase(nomor, loket);
+      }
+    }
+
+    async function syncToDatabase(nomor, loket) {
       try {
-        await fetch(`${SCRIPT_URL}?action=next&loket=${loketTarget}`);
+        await fetch(`${SCRIPT_URL}?action=next&loket=${loket}`);
       } catch (e) {
         console.error("Gagal sinkronisasi", e);
       }
     }
 
-    function panggilUlangLoket(loketTarget) {
-      const nomorTerakhir = lastNumberPerLoket[loketTarget];
-      if (!nomorTerakhir || nomorTerakhir === 0) {
-        alert(`Loket ${loketTarget} belum pernah memanggil antrean.`);
-        return;
-      }
-      
-      currentNumber = nomorTerakhir;
-      currentLoket = loketTarget;
-      updateUI();
-
-      bersuara(nomorTerakhir, loketTarget);
-    }
-
     async function resetAntrean() {
-      if (confirm("Reset antrean harian kembali ke 0?")) {
-        currentNumber = 0;
-        currentLoket = 0;
-        lastNumberPerLoket = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      if (confirm("Reset seluruh antrean harian kembali ke 0?")) {
+        nextQueueNumber = 1;
+        currentServing = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        skippedNumbers = [];
+        lastCalled = { num: 0, loket: 0 };
+        
         updateUI();
 
         try {
@@ -386,92 +436,62 @@
       }
     }
 
-   // ========================================================
-  // SISTEM ANTREAN AUDIO (AUDIO QUEUE SYSTEM)
-  // ========================================================
-  let audioQueue = []; // Menampung daftar kalimat yang antre dipanggil
-  let isSpeaking = false; // Status apakah audio sedang berbunyi
+    // ========================================================
+    // ANTREAN AUDIO (ANTI TUMPUK SUARA)
+    // ========================================================
+    let audioQueue = [];
+    let isSpeaking = false;
 
-  // 1. Fungsi Utama saat Tombol Panggil Diklik
-  function bersuara(nomor, loket) {
-    const teks = `Nomor antrean ${nomor}, silakan menuju loket ${loket}`;
-    
-    // Masukkan kalimat panggilan ke dalam antrean
-    audioQueue.push(teks);
+    function bersuara(nomor, loket) {
+      const teks = `Nomor antrean ${nomor}, silakan menuju loket ${loket}`;
+      audioQueue.push(teks);
 
-    // Jika mesin audio sedang tidak memutar apapun, jalankan antrean
-    if (!isSpeaking) {
-      processAudioQueue();
-    }
-  }
-
-  // 2. Fungsi untuk Memproses Antrean Audio Satu per Satu
-  function processAudioQueue() {
-    // Jika antrean kosong, hentikan proses
-    if (audioQueue.length === 0) {
-      isSpeaking = false;
-      return;
-    }
-
-    isSpeaking = true;
-    const teksBerikutnya = audioQueue.shift(); // Ambil kalimat paling awal di antrean
-
-    // OPSI 1: Menggunakan ResponsiveVoice
-    if (typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()) {
-      responsiveVoice.speak(teksBerikutnya, "Indonesian Female", {
-        rate: 0.85,
-        pitch: 0.9,
-        onend: function() {
-          // Ketika audio selesai berbunyi, lanjut ke antrean berikutnya
-          processAudioQueue();
-        },
-        onerror: function() {
-          // Jika ResponsiveVoice gagal, gunakan Google Audio
-          playGoogleAudioQueue(teksBerikutnya);
-        }
-      });
-    } else {
-      // OPSI 2: Fallback ke Google Audio
-      playGoogleAudioQueue(teksBerikutnya);
-    }
-  }
-
-  // OPSI 2: Fallback Google Audio Stream
-  function playGoogleAudioQueue(teks) {
-    const googleAudioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(teks)}&tl=id&client=tw-ob`;
-    currentAudioObj = new Audio(googleAudioUrl);
-    
-    // Saat audio selesai diputar (Event 'ended')
-    currentAudioObj.onended = function() {
-      processAudioQueue();
-    };
-
-    currentAudioObj.play().catch(() => {
-      // OPSI 3: Fallback ke Native Speech jika Google diblokir
-      playNativeSpeechQueue(teks);
-    });
-  }
-
-  // OPSI 3: Fallback Web Speech API Native
-  function playNativeSpeechQueue(teks) {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(teks);
-      utterance.lang = 'id-ID';
-      utterance.rate = 0.85;
-
-      utterance.onend = function() {
+      if (!isSpeaking) {
         processAudioQueue();
-      };
-
-      utterance.onerror = function() {
-        processAudioQueue();
-      };
-
-      window.speechSynthesis.speak(utterance);
-    } else {
-      processAudioQueue();
+      }
     }
-  }
+
+    function processAudioQueue() {
+      if (audioQueue.length === 0) {
+        isSpeaking = false;
+        return;
+      }
+
+      isSpeaking = true;
+      const teksBerikutnya = audioQueue.shift();
+
+      if (typeof responsiveVoice !== 'undefined' && responsiveVoice.voiceSupport()) {
+        responsiveVoice.speak(teksBerikutnya, "Indonesian Female", {
+          rate: 0.85,
+          pitch: 0.9,
+          onend: function() { processAudioQueue(); },
+          onerror: function() { playGoogleAudioQueue(teksBerikutnya); }
+        });
+      } else {
+        playGoogleAudioQueue(teksBerikutnya);
+      }
+    }
+
+    function playGoogleAudioQueue(teks) {
+      const googleAudioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(teks)}&tl=id&client=tw-ob`;
+      const audio = new Audio(googleAudioUrl);
+      audio.onended = function() { processAudioQueue(); };
+      audio.play().catch(() => { playNativeSpeechQueue(teks); });
+    }
+
+    function playNativeSpeechQueue(teks) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(teks);
+        utterance.lang = 'id-ID';
+        utterance.rate = 0.85;
+        utterance.onend = function() { processAudioQueue(); };
+        utterance.onerror = function() { processAudioQueue(); };
+        window.speechSynthesis.speak(utterance);
+      } else {
+        processAudioQueue();
+      }
+    }
   </script>
 </body>
 </html>
